@@ -1,7 +1,16 @@
-function renderBooks(filter) {
+let books;
+
+async function renderBooks(filter) {
   const booksWrapper = document.querySelector('.books');
 
-  const books = getBooks()
+  booksWrapper.classList += ' books__loading'
+
+  if (!books) {
+  books = await getBooks();
+  }
+  // const books = await getBooks()
+  booksWrapper.classList.remove('books__loading')
+
 
   if (filter === 'LOW_TO_HIGH') {
     books.sort((a, b) => (a.salePrice || a.originalPrice) - (b.salePrice || b.originalPrice));
@@ -12,7 +21,6 @@ function renderBooks(filter) {
   else if (filter === "RATING") {
     books.sort((a,b) => b.rating - a.rating);
   }
-
 
   const booksHtml = books
   .map((book) => {
@@ -66,11 +74,12 @@ function filterBooks(event) {
 setTimeout(() => {
   renderBooks("");
 });
-
-
 // FAKE DATA
 function getBooks() {
-  return [
+  //FIRST EVER LOADING STATE
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
     {
       id: 1,
       title: "Crack the Coding Interview",
@@ -159,7 +168,9 @@ function getBooks() {
       salePrice: null,
       rating: 4.5,
     },
-  ];
+  ]);
+}, 1000);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
