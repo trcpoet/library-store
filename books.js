@@ -1,18 +1,18 @@
 let books;
 
 async function renderBooks(filter) {
-  const booksWrapper = document.querySelector('.books');
+  const booksWrapper = document.querySelector('.books'); //HTML container where books will be displayed
 
-  booksWrapper.classList += ' books__loading'
+  booksWrapper.classList += ' books__loading' //Loading state that indicated visually that books are being loaded 
 
-  if (!books) {
-  books = await getBooks();
+  if (!books) { //Avoids refetching every time you filter by checking if books have already been retrieved 
+  books = await getBooks(); //Fetch books if not already available
   }
   // const books = await getBooks()
-  booksWrapper.classList.remove('books__loading')
+  booksWrapper.classList.remove('books__loading') //Remove loading state
 
 
-  if (filter === 'LOW_TO_HIGH') {
+  if (filter === 'LOW_TO_HIGH') { 
     books.sort((a, b) => (a.salePrice || a.originalPrice) - (b.salePrice || b.originalPrice));
   }
   else if (filter === "HIGH_TO_LOW") {
@@ -22,8 +22,8 @@ async function renderBooks(filter) {
     books.sort((a,b) => b.rating - a.rating);
   }
 
-  const booksHtml = books
-  .map((book) => {
+  const booksHtml = books //Generate HTML for all books
+  .map((book) => { //Uses map() to create/generate an HTML for each book(image, title, rating, price)
     return `<div class="book">
     <figure class="book__img--wrapper">
       <img class="book__img" src= "${book.url}" alt="">
@@ -32,19 +32,22 @@ async function renderBooks(filter) {
       ${book.title}
     </div>
     <div class="book__ratings">
-    ${ratingsHTML(book.rating)}
+    ${ratingsHTML(book.rating)} 
     </div>
      ${priceHTML(book.originalPrice, book.salePrice)}
     </div>
   </div>`;
   }).join("")
 
-  booksWrapper.innerHTML = booksHtml;
+  //Uses helper functions ratingsHTML() for stars and priceHTML for price formatting. join("") flattens the array into one HTML string
+
+  booksWrapper.innerHTML = booksHtml; //📥 7. Replace current book HTML with new sorted/displayed books:
+
   // booksWrapper.innerHTML = booksHtml.join('');
 }
 
 
-function priceHTML(originalPrice, salePrice) {
+function priceHTML(originalPrice, salePrice) { 
   if (!salePrice) {
     return `$${originalPrice.toFixed(2)}`
   }
@@ -66,7 +69,10 @@ function ratingsHTML(rating) {
 }
 
 
-function filterBooks(event) {
+function filterBooks(event) { //This function connects the filter dropdown or buttons to the rendering logic.
+// This function connects the filter dropdown or buttons to the rendering logic.
+// Passes the selected filter (event.target.value) to the renderBooks() function.
+// This triggers sorting and re-rendering of the book list.
     renderBooks(event.target.value)
 }
 
@@ -176,3 +182,16 @@ function getBooks() {
 document.addEventListener('DOMContentLoaded', () => {
   renderBooks();
 });
+
+
+//Let’s say you visit an online bookstore and see a dropdown labeled "Sort By":
+
+// You click "Rating".
+
+// This triggers filterBooks(event), which grabs the value "RATING" and calls renderBooks("RATING").
+
+// renderBooks sorts all the books by rating (highest first), builds the new HTML, and updates the page.
+
+// renderBooks(filter)	: Fetches and displays books, with sorting and formatting
+// filterBooks(event)	: Connects UI interactions to book rendering by passing the filter choice
+
